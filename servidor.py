@@ -132,7 +132,7 @@ if __name__ == '__main__':
     print("  • POST /limpiar           - Limpiar texto")
     print("  • POST /borrar_ultima     - Borrar última letra")
     print("\n" + "="*70)
-    print("Servidor corriendo en: http://localhost:5000")
+    print("Servidor corriendo en: http://localhost:3000")
     print("="*70 + "\n")
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=3000, debug=True)

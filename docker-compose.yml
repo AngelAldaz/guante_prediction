@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  lsm-predictor:
+    build: .
+    container_name: lsm-predictor
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
+    volumes:
+      # Opcional: montar archivos para desarrollo
+      - ./templates:/app/templates
+    networks:
+      - lsm-network
+
+networks:
+  lsm-network:
+    driver: bridge
