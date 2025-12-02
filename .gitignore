@@ -1,0 +1,8 @@
+# --- Carpetas creadas automáticamente ---
+__pycache__/
+*.py[cod]
+
+# Entornos virtuales
+venv/
+.env/
+.venv/

@@ -1,0 +1,17 @@
+
+RESUMEN DEL SISTEMA LSM
+=======================
+
+Dataset:
+- Muestras totales: 810
+- Clases: 27
+- Balance: Perfecto (30 muestras/clase)
+
+Modelo:
+- Algoritmo: Random Forest
+- Precisión: 98.77%
+- Errores: 2/162
+
+Estado: ✓ LISTO PARA PRODUCCIÓN
+
+Generado: 2025-11-28 19:12:16.870288

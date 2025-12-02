@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LSM - Predictor en Tiempo Real</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 900px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .content {
+        padding: 40px;
+      }
+
+      .texto-area {
+        background: #f8f9fa;
+        border: 3px solid #e9ecef;
+        border-radius: 15px;
+        padding: 30px;
+        min-height: 200px;
+        margin-bottom: 30px;
+        position: relative;
+      }
+
+      .texto-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .texto-contenido {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #495057;
+        line-height: 1.6;
+        word-break: break-all;
+        min-height: 100px;
+        letter-spacing: 2px;
+      }
+
+      .texto-contenido.vacio {
+        color: #adb5bd;
+        font-style: italic;
+        font-size: 1.5rem;
+      }
+
+      .estadisticas {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .controles {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      button {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .btn-actualizar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-actualizar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-limpiar {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn-limpiar:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+      }
+
+      .btn-borrar {
+        background: #ffc107;
+        color: #212529;
+      }
+
+      .btn-borrar:hover {
+        background: #e0a800;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+      }
+
+      .indicador {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: pulse 2s infinite;
+      }
+
+      .indicador.activo {
+        background: #28a745;
+      }
+
+      .indicador.inactivo {
+        background: #dc3545;
+        animation: none;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .estado {
+        text-align: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.8rem;
+        }
+
+        .texto-contenido {
+          font-size: 1.5rem;
+        }
+
+        .stat-number {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🤟 LSM Predictor</h1>
+        <p>Lenguaje de Señas Mexicano - Reconocimiento en Tiempo Real</p>
+      </div>
+
+      <div class="content">
+        <div class="estado">
+          <span class="indicador activo"></span>
+          <span id="estado-texto">Sistema Activo - Esperando datos...</span>
+        </div>
+
+        <div class="estadisticas">
+          <div class="stat-card">
+            <div class="stat-number" id="total-letras">0</div>
+            <div class="stat-label">Letras Totales</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="ultima-actualizacion">--:--:--</div>
+            <div class="stat-label">Última Actualización</div>
+          </div>
+        </div>
+
+        <div class="texto-area">
+          <div class="texto-label">📝 Texto Reconocido:</div>
+          <div class="texto-contenido vacio" id="texto-reconocido">
+            Esperando predicciones...
+          </div>
+        </div>
+
+        <div class="controles">
+          <button class="btn-actualizar" onclick="actualizarTexto()">
+            🔄 Actualizar
+          </button>
+          <button class="btn-borrar" onclick="borrarUltima()">
+            ⌫ Borrar Última
+          </button>
+          <button class="btn-limpiar" onclick="limpiarTexto()">
+            🗑️ Limpiar Todo
+          </button>
+        </div>
+      </div>
+
+      <div class="footer">
+        ITM - Sistemas Programables | Noveno Semestre 2025
+      </div>
+    </div>
+
+    <script>
+      // Actualizar automáticamente cada 2 segundos
+      let intervalo = setInterval(actualizarTexto, 2000);
+
+      async function actualizarTexto() {
+        try {
+          const response = await fetch("/obtener_texto");
+          const data = await response.json();
+
+          const textoElemento = document.getElementById("texto-reconocido");
+          const totalLetras = document.getElementById("total-letras");
+          const ultimaActualizacion = document.getElementById(
+            "ultima-actualizacion"
+          );
+
+          if (data.parrafo) {
+            textoElemento.textContent = data.parrafo;
+            textoElemento.classList.remove("vacio");
+          } else {
+            textoElemento.textContent = "Esperando predicciones...";
+            textoElemento.classList.add("vacio");
+          }
+
+          totalLetras.textContent = data.total_letras;
+
+          // Actualizar hora
+          const ahora = new Date();
+          const hora = ahora.toLocaleTimeString("es-MX");
+          ultimaActualizacion.textContent = hora;
+        } catch (error) {
+          console.error("Error al actualizar:", error);
+          document.getElementById("estado-texto").innerHTML =
+            '<span class="indicador inactivo"></span>Error de conexión';
+        }
+      }
+
+      async function limpiarTexto() {
+        if (!confirm("¿Estás seguro de que deseas limpiar todo el texto?")) {
+          return;
+        }
+
+        try {
+          const response = await fetch("/limpiar", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            await actualizarTexto();
+            alert("✓ Texto limpiado correctamente");
+          }
+        } catch (error) {
+          console.error("Error al limpiar:", error);
+          alert("✗ Error al limpiar el texto");
+        }
+      }
+
+      async function borrarUltima() {
+        try {
+          const response = await fetch("/borrar_ultima", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            await actualizarTexto();
+          } else {
+            alert(data.mensaje);
+          }
+        } catch (error) {
+          console.error("Error al borrar:", error);
+          alert("✗ Error al borrar la letra");
+        }
+      }
+
+      // Cargar datos al inicio
+      window.onload = function () {
+        actualizarTexto();
+      };
+
+      // Limpiar intervalo al cerrar
+      window.onbeforeunload = function () {
+        clearInterval(intervalo);
+      };
+    </script>
+  </body>
+</html>
