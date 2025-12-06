@@ -1,4 +1,4 @@
 Mejor Modelo: Random Forest
-Test Accuracy: 1.0000
-CV Mean: 1.0000
-CV Std: 0.0000
+Test Accuracy: 0.9951
+CV Mean: 0.9915
+CV Std: 0.0036

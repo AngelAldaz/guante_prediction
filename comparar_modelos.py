@@ -17,7 +17,7 @@ print("="*70)
 
 # Cargar datos
 print("\n1. Cargando dataset...")
-df = pd.read_csv('datos_reales.csv')
+df = pd.read_csv('datos_reales.csv', on_bad_lines='skip')
 print(f"   ✓ Dataset cargado: {len(df)} muestras, {df['letra'].nunique()} clases")
 
 # Preparar datos
